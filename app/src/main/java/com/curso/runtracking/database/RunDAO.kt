@@ -37,7 +37,7 @@ interface RunDAO {
      * all the rows sorted by id DESC
      */
     @Query("SELECT * FROM daily_run_tracking_table ORDER BY runId DESC")
-    suspend fun getAllRuns(): LiveData<List<RunTracker>>
+    fun getAllRuns(): LiveData<List<RunTracker>>
 
     /**
      * to get an row
