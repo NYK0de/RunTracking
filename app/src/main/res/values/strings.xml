@@ -5,7 +5,7 @@
 
     <!-- App title and fragment titles -->
     <string name="run_tracker_fragment">RunTrackerFragment</string>
-    <string name="run_quality_fragment">RunQualityFragment</string>
+    <string name="run_evaluation_fragment">RunQualityFragment</string>
 
     <!-- Button labels -->
     <string name="start">Start</string>
