@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.android.trackmysleepquality.sleepquality
+package com.curso.runtracking.runevaluation
 
 import android.os.Bundle
 import android.view.LayoutInflater
