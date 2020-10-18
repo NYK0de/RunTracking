@@ -6,11 +6,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.findNavController
 import com.curso.runtracking.R
 import com.curso.runtracking.database.RunDatabase
 import com.curso.runtracking.databinding.FragmentRunTrackerBinding
+import com.google.android.material.snackbar.Snackbar
 
 
 /**
@@ -30,22 +32,42 @@ class RunTrackerFragment : Fragment() {
 
         val application = requireNotNull(this.activity).application
 
+        // getting an instance of the datasource (Dao)
         val datasource = RunDatabase.getInstance(application).runDatabaseDao
 
+        // Creating a view model factory
         val viewModelFactory = RunTrackerViewModelFactory(datasource, application)
 
-        val viewModel = ViewModelProvider(this, viewModelFactory).get(RunTrackerViewModel::class.java)
+        // Creating an instance of the viewModel of this fragment
+        val runTrackerviewModel = ViewModelProvider(this, viewModelFactory).get(RunTrackerViewModel::class.java)
 
-        binding.runTrackerViewModel = viewModel
-
-        //TODO (01) Update onCreateView() to get an instance of SleepTrackerViewModel
-        //using the factory.
-
-        //TODO (02) Update to set this as the lifecycle owner of the binding.
-
-        //TODO (04) Update to assign sleepTrackerViewModel binding variable
-        //to the sleepTrackerViewModel.
+        // giving a viewModel to the layout for binding
+        binding.runTrackerViewModel = runTrackerviewModel
+        //giving a lifeCycle Owner
         binding.lifecycleOwner = this
+
+        // Adding an observer on the state variable for navigating when STOP BUTTON is pressed
+        runTrackerviewModel.navigateToRunEvaluation.observe(viewLifecycleOwner, Observer {run ->
+            run?.let {
+                this.findNavController().navigate(
+                    RunTrackerFragmentDirections.actionRunTrackerFragmentToRunEvaluationFragment(run.runId))
+
+                runTrackerviewModel.doneNavigating()
+            }
+        })
+
+        runTrackerviewModel.showSnackBarEvent.observe(viewLifecycleOwner, Observer {
+            if (it == true) { // Observed state is true.
+                Snackbar.make(
+                    activity!!.findViewById(android.R.id.content),
+                    getString(R.string.cleared_message),
+                    Snackbar.LENGTH_SHORT // How long to display the message.
+                ).show()
+                runTrackerviewModel.doneShowingSnackbar()
+            }
+        })
+
+        // returning the root view of the layout
         return binding.root
     }
 

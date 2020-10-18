@@ -25,7 +25,8 @@
     <string name="start_time"><![CDATA[<b>Start:</b>]]></string>
     <string name="end_time"><![CDATA[<b>End:</b>]]></string>
     <string name="quality"><![CDATA[<b>Quality:</b>]]></string>
-    <string name="hours_slept"><![CDATA[<b>Hours:Minutes:Seconds</b>]]></string>
+    <string name="distance"><![CDATA[<b>Distance:</b>]]></string>
+    <string name="hours_runned"><![CDATA[<b>Hours:Minutes:Seconds</b>]]></string>
 
     <!-- run quality strings -->
     <string name="how_was_hour_run">How was your run?</string>

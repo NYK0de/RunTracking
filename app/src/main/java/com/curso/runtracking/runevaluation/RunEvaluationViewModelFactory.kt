@@ -14,4 +14,25 @@
  * limitations under the License.
  */
 
-package com.example.android.trackmysleepquality.sleepquality
+package com.curso.runtracking.runevaluation
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import com.curso.runtracking.database.RunDAO
+import java.lang.IllegalArgumentException
+
+class RunEvaluationViewModelFactory(
+    private val runEvaluationKey: Long,
+    private val dataSource: RunDAO ) : ViewModelProvider.Factory {
+
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(RunEvaluationViewModel::class.java)){
+            return RunEvaluationViewModel(runEvaluationKey, dataSource) as T
+        }
+        throw IllegalArgumentException("UnknowViewModelClass")
+    }
+
+
+}

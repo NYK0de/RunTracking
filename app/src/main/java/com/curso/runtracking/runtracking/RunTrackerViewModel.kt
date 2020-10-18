@@ -1,9 +1,7 @@
 package com.curso.runtracking.runtracking
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
+import androidx.lifecycle.*
 import com.curso.runtracking.database.RunDAO
 import com.curso.runtracking.database.RunTracker
 import com.curso.runtracking.formatRuns
@@ -13,36 +11,88 @@ class RunTrackerViewModel(val database: RunDAO,
                           application: Application) : AndroidViewModel(application)
 {
 
-    private var viewModelJob = Job()
-
-    override fun onCleared() {
-        super.onCleared()
-        viewModelJob.cancel()
-    }
-
-    // Define the Scope to use with coroutines (in firts step of coroutines)
-    private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)
-
-    //define a variable today
-    private var runToday = MutableLiveData<RunTracker?>()
+    // ------ declaring variables to manage navigation -------------------------
+    private var todayRuns = MutableLiveData<RunTracker?>()
 
     private val runsOfAllDays = database.getAllRuns()
     /**
-     * Converted nights to Spanned for displaying.
+     * Converted dayRunning to Spanned for displaying.
      */
-    val nightsString = Transformations.map(runsOfAllDays) { runsOfAllDays ->
+    val allDaysString = Transformations.map(runsOfAllDays) { runsOfAllDays ->
         formatRuns(runsOfAllDays, application.resources)
     }
+
+    val startButtonVisible = Transformations.map(todayRuns) {
+        null == it
+    }
+    val stopButtonVisible = Transformations.map(todayRuns) {
+        null != it
+    }
+    val clearButtonVisible = Transformations.map(runsOfAllDays) {
+        it?.isNotEmpty()
+    }
+    /**
+     * Request a toast by setting this value to true.
+     *
+     * This is private because we don't want to expose setting this value to the Fragment.
+     */
+    private var _showSnackbarEvent = MutableLiveData<Boolean>()
+
+    /**
+     * If this is true, immediately `show()` a toast and call `doneShowingSnackbar()`.
+     */
+    val showSnackBarEvent: LiveData<Boolean>
+        get() = _showSnackbarEvent
+
+    //TODO (04) Using the familiar pattern, create encapsulated showSnackBarEvent variable
+    //and doneShowingSnackbar() fuction.
+
+    //TODO (06) In onClear(), set the value of _showOnSnackbarEvent to true.
+
+
+    /**
+     * Variable that tells the Fragment to navigate to a specific [RunEvaluationFragment]
+     * This is 'private' because we don't want to expose setting this value to the Fragment
+     */
+    private val _navigateToRunEvaluation = MutableLiveData<RunTracker>()
+
+    /**
+     * Call this immediately after calling `show()` on a toast.
+     *
+     * It will clear the toast request, so if the user rotates their phone it won't show a duplicate
+     * toast.
+     */
+
+    fun doneShowingSnackbar() {
+        _showSnackbarEvent.value = false
+    }
+
+    /**
+     * If this is non-null, inmediately navigate to [RunEvaluationFragment]
+     * and call [doneNavigating]
+     */
+    val navigateToRunEvaluation: LiveData<RunTracker>
+        get() = _navigateToRunEvaluation
+
+    /**
+     * Call this inmediatly after navigating to [RunEvalationFragment]
+     * It will clear the navigation request,
+     * so if the user rotates their phone it won't navigate twice
+     */
+    fun doneNavigating(){
+        _navigateToRunEvaluation.value = null
+    }
+    // ------ End of declaring variables for navigation components -------------
 
     init {
         initializeToday()
     }
-
     private fun initializeToday() {
-        uiScope.launch {
-            runToday.value = getTodayRunFromDatabase()
+        viewModelScope.launch {
+            todayRuns.value = getTodayRunFromDatabase()
         }
     }
+
     private suspend fun getTodayRunFromDatabase():  RunTracker? {
 
             var todayRun = database.getRunToday()
@@ -53,46 +103,41 @@ class RunTrackerViewModel(val database: RunDAO,
     }
 
     fun onStartTracking(){
-        uiScope.launch {
+        viewModelScope.launch {
             val newToday = RunTracker()
             insert(newToday)
-            runToday.value = getTodayRunFromDatabase()
+            todayRuns.value = getTodayRunFromDatabase()
         }
     }
 
     private suspend fun insert(today: RunTracker){
-        withContext(Dispatchers.IO){
-            database.insert(today)
-        }
+        database.insert(today)
     }
+
 
     fun onStopTracking(){
-        uiScope.launch {
-            val oldTodayRun = runToday.value ?: return@launch
+        viewModelScope.launch {
+            val oldTodayRun = todayRuns.value ?: return@launch
             oldTodayRun.endRunTimeMilli = System.currentTimeMillis()
             update(oldTodayRun)
+            _navigateToRunEvaluation.value = oldTodayRun
         }
     }
-    private suspend fun update(runToday: RunTracker) {
-        withContext(Dispatchers.IO){
-            database.update(runToday)
-        }
-
+    private suspend fun update(runToday: RunTracker){
+        database.update(runToday)
     }
 
 
     fun onClear(){
-        uiScope.launch {
+        viewModelScope.launch {
             clear()
-            runToday.value = null
+            todayRuns.value = null
+            _showSnackbarEvent.value = true
         }
     }
-    private suspend fun clear() {
-        withContext(Dispatchers.IO){
-            database.clear()
-        }
+    private suspend fun clear(){
+        database.clear()
     }
-
 
 
 }
