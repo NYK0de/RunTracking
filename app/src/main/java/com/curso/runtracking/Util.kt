@@ -25,7 +25,9 @@ fun formatRuns(days: List<RunTracker>, resources: Resources): Spanned {
                 append("\t${convertLongToDateString(it.endRunTimeMilli)}<br>")
                 append(resources.getString(R.string.quality))
                 append("\t${convertNumericQualityToString(it.runEvaluation, resources)}<br>")
-                append(resources.getString(R.string.hours_slept))
+                append(resources.getString(R.string.distance))
+                append("\t${it.runDistance} kms <br>")
+                append(resources.getString(R.string.hours_runned))
                 // Hours
                 append("\t ${it.endRunTimeMilli.minus(it.startRunTimeMilli) / 1000 / 60 / 60}:")
                 // Minutes

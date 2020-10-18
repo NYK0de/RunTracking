@@ -14,4 +14,67 @@
  * limitations under the License.
  */
 
-package com.example.android.trackmysleepquality.sleepquality
+package com.curso.runtracking.runevaluation
+
+import androidx.databinding.ObservableField
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.curso.runtracking.database.RunDAO
+import kotlinx.coroutines.launch
+
+
+class RunEvaluationViewModel(
+    private val runTrackingKey: Long = 0L,
+    val database: RunDAO
+) : ViewModel(){
+
+    var runDistance = ObservableField("")
+
+    /**
+     * Variable that tells the fragment whether it should navigate to [RunTrackerFragment]
+     * This is 'private' because we don't want to expose the ability to set [MutableLiveData] to
+     * the [Fragment]
+     */
+    private val _navigateToRunTracker = MutableLiveData<Boolean?>()
+
+
+    /**
+     * When - true - inmediatly navigate back to the [RunTrackerFragment]
+     */
+    val navigateToRunTracking: LiveData<Boolean?>
+        get() = _navigateToRunTracker
+
+
+
+    /**
+     * Call this immediately after navigating to [RunTrackerFragment]
+     */
+    fun doneNavigating() {
+        _navigateToRunTracker.value = null
+    }
+
+    fun onSetRunQuality(runQuality: Int){
+        viewModelScope.launch {
+            val today = database.get(runTrackingKey) ?: return@launch
+
+            today.runEvaluation = runQuality
+            database.update(today)
+
+
+        }
+    }
+
+    fun onSaveRunResult(){
+        viewModelScope.launch {
+            // Setting this variable to true will alert the observer and trigger navigation
+            val today = database.get(runTrackingKey) ?: return@launch
+
+            today.runDistance = runDistance.get()?.toFloat() ?: 0f
+            database.update(today)
+
+            _navigateToRunTracker.value = true
+        }
+    }
+}
