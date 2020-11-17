@@ -46,6 +46,10 @@ class RunTrackerFragment : Fragment() {
         //giving a lifeCycle Owner
         binding.lifecycleOwner = this
 
+        val runTrackerAdapter = RunTrackerAdapter()
+
+        binding.runList.adapter = runTrackerAdapter
+
         // Adding an observer on the state variable for navigating when STOP BUTTON is pressed
         runTrackerviewModel.navigateToRunEvaluation.observe(viewLifecycleOwner, Observer {run ->
             run?.let {
@@ -64,6 +68,14 @@ class RunTrackerFragment : Fragment() {
                     Snackbar.LENGTH_SHORT // How long to display the message.
                 ).show()
                 runTrackerviewModel.doneShowingSnackbar()
+            }
+        })
+
+        runTrackerviewModel.runsOfAllDays.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                if (it != null) {
+                    runTrackerAdapter.submitList(it)
+                }
             }
         })
 

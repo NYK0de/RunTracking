@@ -14,7 +14,7 @@ class RunTrackerViewModel(val database: RunDAO,
     // ------ declaring variables to manage navigation -------------------------
     private var todayRuns = MutableLiveData<RunTracker?>()
 
-    private val runsOfAllDays = database.getAllRuns()
+    val runsOfAllDays = database.getAllRuns()
     /**
      * Converted dayRunning to Spanned for displaying.
      */

@@ -39,4 +39,9 @@
 
     <!-- Toast to play after Clear button has been pressed -->
     <string name="cleared_message">All your data is gone forever.</string>
+    <string name="distancia_recorrida">Distancia: </string>
+    <string name="run_distance_kms">%s kms</string>
+    <string name="hora_de_inicio">Hora de Inicio:</string>
+    <string name="holder_hora_inicio">2020-10-18 00:00:00</string>
+    <string name="holder_hora_fin">2020-10-18 01:00:00</string>
 </resources>
