@@ -14,7 +14,7 @@ class RunTrackerViewModel(val database: RunDAO,
     // ------ declaring variables to manage navigation -------------------------
     private var todayRuns = MutableLiveData<RunTracker?>()
 
-    private val runsOfAllDays = database.getAllRuns()
+    val runsOfAllDays = database.getAllRuns()
     /**
      * Converted dayRunning to Spanned for displaying.
      */
@@ -139,5 +139,15 @@ class RunTrackerViewModel(val database: RunDAO,
         database.clear()
     }
 
+    private val _navigateToRunDetails = MutableLiveData<Long>()
+    val navigateToRunDetails
+        get() = _navigateToRunDetails
+
+    fun onRunClicked(id: Long){
+        _navigateToRunDetails.value = id
+    }
+    fun onRunDataEvaluationNavigated(){
+        _navigateToRunDetails.value = null
+    }
 
 }

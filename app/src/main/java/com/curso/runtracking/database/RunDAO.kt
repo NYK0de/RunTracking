@@ -44,4 +44,7 @@ interface RunDAO {
      */
     @Query("SELECT * FROM daily_run_tracking_table ORDER BY runId DESC LIMIT 1")
     suspend fun getRunToday(): RunTracker?
+
+    @Query("SELECT * from daily_run_tracking_table WHERE runId = :key")
+    fun getRunWithId(key: Long): LiveData<RunTracker>
 }

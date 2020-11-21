@@ -57,8 +57,20 @@ fun convertNumericQualityToString(quality: Int, resources: Resources): String {
     return qualityString
 }
 
+fun convertNumericEvaluationToDrawable(evaluation: Int): Int {
+    var qualityString = R.drawable.ic_run_0
+    when (evaluation) {
+        0 -> qualityString = R.drawable.ic_run_1
+        1 -> qualityString = R.drawable.ic_run_2
+        2 -> qualityString = R.drawable.ic_run_3
+        4 -> qualityString = R.drawable.ic_run_4
+        5 -> qualityString = R.drawable.ic_run_5
+    }
+    return qualityString
+}
+
 @SuppressLint("SimpleDateFormat")
 fun convertLongToDateString(systemTime: Long): String {
-    return SimpleDateFormat("EEEE MMM-dd-yyyy' Time: 'HH:mm")
+    return SimpleDateFormat("EEEE dd, HH:mm:ss")
         .format(systemTime).toString()
 }

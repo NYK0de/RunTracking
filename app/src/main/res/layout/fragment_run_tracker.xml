@@ -25,31 +25,15 @@
              better and more efficient way to do this, and you will learn about
              RecyclerView in a later lesson. -->
 
-        <ScrollView
-            android:layout_width="match_parent"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/run_list"
+            android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginTop="32dp"
-            android:layout_marginBottom="32dp"
-            app:layout_constraintBottom_toTopOf="@+id/clear_button"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/start_button"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/stop_button">
-
-            <!-- In the TextView, we can access the nightsString LiveData,
-                 which keeps it displayed and updated in the TextView
-                 whenever it changes. -->
-
-            <TextView
-                android:id="@+id/textview"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/margin"
-                android:layout_marginTop="@dimen/margin"
-                android:layout_marginEnd="@dimen/margin"
-                android:text="@{runTrackerViewModel.allDaysString}" />
-        </ScrollView>
-
+            app:layout_constraintTop_toTopOf="parent" />
         <!-- With data binding and LiveData, we can track the buttons' visibility states
              from the ViewModel. The click handler is in the ViewModel as well, and
              you can set it for the Views using this lambda pattern. -->
@@ -59,43 +43,42 @@
             style="@style/SleepButtons"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin"
-            android:text="@string/start"
-            android:onClick="@{()->runTrackerViewModel.onStartTracking()}"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
             android:enabled="@{runTrackerViewModel.startButtonVisible}"
-            app:layout_constraintBaseline_toBaselineOf="@id/stop_button"
+            android:onClick="@{()->runTrackerViewModel.onStartTracking()}"
+            android:text="@string/start"
             app:layout_constraintEnd_toStartOf="@+id/stop_button"
-            app:layout_constraintHorizontal_chainStyle="spread"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/run_list" />
 
         <Button
             android:id="@+id/stop_button"
             style="@style/SleepButtons"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:layout_marginEnd="@dimen/margin"
-            android:text="@string/stop"
-            android:onClick="@{()->runTrackerViewModel.onStopTracking()}"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
             android:enabled="@{runTrackerViewModel.stopButtonVisible}"
+            android:onClick="@{()->runTrackerViewModel.onStopTracking()}"
+            android:text="@string/stop"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/start_button"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/run_list" />
 
         <Button
             android:id="@+id/clear_button"
             style="@style/SleepButtons"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin"
-            android:layout_marginEnd="@dimen/margin"
-            android:layout_marginBottom="@dimen/margin"
-            android:text="@string/clear"
-            android:onClick="@{()->runTrackerViewModel.onClear()}"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="@android:color/holo_red_light"
             android:enabled="@{runTrackerViewModel.clearButtonVisible}"
+            android:onClick="@{()->runTrackerViewModel.onClear()}"
+            android:text="@string/clear"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/run_list" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
