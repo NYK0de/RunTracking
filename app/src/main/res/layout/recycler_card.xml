@@ -5,6 +5,7 @@
 
     <data>
         <variable name="run" type="com.curso.runtracking.database.RunTracker" />
+        <variable name="clickListener" type="com.curso.runtracking.runtracking.RunTrackListener" />
     </data>
 
     <androidx.cardview.widget.CardView
@@ -16,20 +17,23 @@
         app:cardCornerRadius="12dp"
         app:cardElevation="3dp"
         app:contentPaddingBottom="12dp"
-        app:contentPaddingTop="12dp">
+        app:contentPaddingTop="12dp"
+        android:onClick="@{() -> clickListener.onClick(run)}">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
             <ImageView
                 android:id="@+id/runImageView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="16dp"
-                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginTop="6dp"
+                android:layout_marginEnd="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
+                app:runImage="@{run}"
                 tools:srcCompat="@drawable/ic_run_0" />
 
             <TextView
@@ -40,7 +44,7 @@
                 android:layout_marginTop="8dp"
                 android:text="@string/distancia_recorrida"
                 android:textStyle="bold"
-                app:layout_constraintStart_toEndOf="@+id/runImageView"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
@@ -58,11 +62,12 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
+                android:layout_marginEnd="16dp"
                 android:textAlignment="viewStart"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/textView3"
+                app:layout_constraintEnd_toStartOf="@+id/runImageView"
+                app:layout_constraintStart_toEndOf="@+id/textview"
                 app:layout_constraintTop_toTopOf="@+id/textview"
+                app:runDistance="@{run}"
                 tools:text="@string/run_distance_kms" />
 
             <TextView
@@ -73,6 +78,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
                 android:text=""
+                app:iniHour="@{run}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/textView3"
                 app:layout_constraintTop_toBottomOf="@+id/runDistanceTextView"
@@ -83,7 +89,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="Hora de fin:"
+                android:text="@string/hora_de_fin"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="@+id/textView3"
                 app:layout_constraintStart_toStartOf="@+id/textView3"
@@ -98,6 +104,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="4dp"
                 android:text=""
+                app:endHour="@{run}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/textView6"

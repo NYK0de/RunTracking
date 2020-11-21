@@ -9,6 +9,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
 import com.curso.runtracking.R
 import com.curso.runtracking.database.RunDatabase
 import com.curso.runtracking.databinding.FragmentRunTrackerBinding
@@ -46,9 +47,22 @@ class RunTrackerFragment : Fragment() {
         //giving a lifeCycle Owner
         binding.lifecycleOwner = this
 
-        val runTrackerAdapter = RunTrackerAdapter()
+        val runTrackerAdapter = RunTrackerAdapter(RunTrackListener {
+            runId -> runTrackerviewModel.onRunClicked(runId)
+        })
+
+        val manager = GridLayoutManager(activity, 2)
+        binding.runList.layoutManager = manager
 
         binding.runList.adapter = runTrackerAdapter
+
+        runTrackerviewModel.navigateToRunDetails.observe(viewLifecycleOwner, Observer { run ->
+            run?.let {
+                this.findNavController().navigate(
+                    RunTrackerFragmentDirections.actionRunTrackerFragmentToRunDetailFragment(run))
+                runTrackerviewModel.onRunDataEvaluationNavigated()
+            }
+        })
 
         // Adding an observer on the state variable for navigating when STOP BUTTON is pressed
         runTrackerviewModel.navigateToRunEvaluation.observe(viewLifecycleOwner, Observer {run ->
@@ -73,9 +87,7 @@ class RunTrackerFragment : Fragment() {
 
         runTrackerviewModel.runsOfAllDays.observe(viewLifecycleOwner, Observer {
             it?.let {
-                if (it != null) {
-                    runTrackerAdapter.submitList(it)
-                }
+                runTrackerAdapter.submitList(it)
             }
         })
 
