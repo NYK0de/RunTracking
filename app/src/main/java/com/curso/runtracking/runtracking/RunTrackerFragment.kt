@@ -1,11 +1,11 @@
 package com.curso.runtracking.runtracking
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -23,22 +23,24 @@ import com.google.android.material.snackbar.Snackbar
  */
 class RunTrackerFragment : Fragment() {
 
+    private var _binding: FragmentRunTrackerBinding? = null
+    // This property is only valid between onCreateView and
+    // onDestroyView.
+    private val binding get() = _binding!!
+
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Get a reference to the binding object and inflate the fragment views.
-        val binding: FragmentRunTrackerBinding = DataBindingUtil.inflate(
-            inflater, R.layout.fragment_run_tracker, container, false)
+        _binding = FragmentRunTrackerBinding.inflate(inflater, container, false)
 
         val application = requireNotNull(this.activity).application
-
         // getting an instance of the datasource (Dao)
         val datasource = RunDatabase.getInstance(application).runDatabaseDao
-
         // Creating a view model factory
         val viewModelFactory = RunTrackerViewModelFactory(datasource, application)
-
         // Creating an instance of the viewModel of this fragment
         val runTrackerviewModel = ViewModelProvider(this, viewModelFactory).get(RunTrackerViewModel::class.java)
 
@@ -58,8 +60,15 @@ class RunTrackerFragment : Fragment() {
 
         runTrackerviewModel.navigateToRunDetails.observe(viewLifecycleOwner, Observer { run ->
             run?.let {
+                this.findNavController().navigate(RunTrackerFragmentDirections.actionRunTrackerFragmentToRunDetailFragment(run))
+                runTrackerviewModel.onRunDataEvaluationNavigated()
+            }git
+        })
+
+        runTrackerviewModel.navigateToRunMapFragment.observe(viewLifecycleOwner, Observer { run ->
+            run?.let {
                 this.findNavController().navigate(
-                    RunTrackerFragmentDirections.actionRunTrackerFragmentToRunDetailFragment(run))
+                    RunTrackerFragmentDirections.actionRunTrackerFragmentToRunMapFragment(run.runId))
                 runTrackerviewModel.onRunDataEvaluationNavigated()
             }
         })
@@ -67,10 +76,12 @@ class RunTrackerFragment : Fragment() {
         // Adding an observer on the state variable for navigating when STOP BUTTON is pressed
         runTrackerviewModel.navigateToRunEvaluation.observe(viewLifecycleOwner, Observer {run ->
             run?.let {
-                this.findNavController().navigate(
-                    RunTrackerFragmentDirections.actionRunTrackerFragmentToRunEvaluationFragment(run.runId))
+               /*
+                findNavController().navigate(
+                   RunMapFragmentDirections.actionRunMapFragmentToRunEvaluationFragment(run.runId)
+               ) */
+                //runTrackerviewModel.doneNavigatingToGrade()
 
-                runTrackerviewModel.doneNavigating()
             }
         })
 
@@ -93,6 +104,13 @@ class RunTrackerFragment : Fragment() {
 
         // returning the root view of the layout
         return binding.root
+    }
+
+
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
 

@@ -4,12 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.curso.runtracking.R
 import com.curso.runtracking.database.RunDatabase
 import com.curso.runtracking.databinding.FragmentRunEvaluationBinding
 
@@ -21,6 +19,11 @@ import com.curso.runtracking.databinding.FragmentRunEvaluationBinding
  */
 class RunEvaluationFragment : Fragment() {
 
+    private var _binding: FragmentRunEvaluationBinding? = null
+    // This property is only valid between onCreateView and
+    // onDestroyView.
+    private val binding get() = _binding!!
+
     /**
      * Called when the Fragment is ready to display content to the screen.
      *
@@ -30,8 +33,12 @@ class RunEvaluationFragment : Fragment() {
                               savedInstanceState: Bundle?): View? {
 
         // Get a reference to the binding object and inflate the fragment views.
-        val binding: FragmentRunEvaluationBinding = DataBindingUtil.inflate(
-                inflater, R.layout.fragment_run_evaluation, container, false)
+        /*val binding: FragmentRunEvaluationBinding = DataBindingUtil.inflate(
+                inflater, R.layout.fragment_run_evaluation, container, false)*/
+
+        _binding = FragmentRunEvaluationBinding.inflate(inflater, container, false)
+
+        val view = binding.root
 
         val application = requireNotNull(this.activity).application
 
@@ -51,7 +58,9 @@ class RunEvaluationFragment : Fragment() {
         evaluationViewModel.navigateToRunTracking.observe(viewLifecycleOwner, Observer {
             if (it == true){
                 this.findNavController().navigate(
-                    RunEvaluationFragmentDirections.actionRunEvaluationFragmentToRunTrackerFragment())
+                    RunEvaluationFragmentDirections.actionRunEvaluationFragmentToRunTrackerFragment(arguments.runTrackingKey)
+
+                )
                 evaluationViewModel.doneNavigating()
             }
         })

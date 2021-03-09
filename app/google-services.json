@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "115371516976",
+    "project_id": "runtracking-8284d",
+    "storage_bucket": "runtracking-8284d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:115371516976:android:eda1d49cdc58999ecef9f5",
+        "android_client_info": {
+          "package_name": "com.curso.runtracking"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "115371516976-5cknbrrmbd9nvodno6u3of1qfpkrq6np.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.curso.runtracking",
+            "certificate_hash": "38f61b7186ede996de5e9ee5cb8dd35b6c32f36d"
+          }
+        },
+        {
+          "client_id": "115371516976-384et60u4t439127ra123con3rd539ac.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDUYPhPW-EV-AGp7Y_L-dwQk0ksGvQRh2Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "115371516976-384et60u4t439127ra123con3rd539ac.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
