@@ -25,12 +25,9 @@ import com.curso.runtracking.database.RunDAO
 import kotlinx.coroutines.launch
 
 
-class RunEvaluationViewModel(
-    private val runTrackingKey: Long = 0L,
-    val database: RunDAO
-) : ViewModel(){
+class RunEvaluationViewModel(private val runTrackingKey: Long = 0L, val database: RunDAO) : ViewModel(){
 
-    var runDistance = ObservableField("")
+
 
     /**
      * Variable that tells the fragment whether it should navigate to [RunTrackerFragment]
@@ -62,19 +59,20 @@ class RunEvaluationViewModel(
             today.runEvaluation = runQuality
             database.update(today)
 
+            //_navigateToRunTracker.value = true
 
         }
     }
 
     fun onSaveRunResult(){
-        viewModelScope.launch {
+        //viewModelScope.launch {
             // Setting this variable to true will alert the observer and trigger navigation
-            val today = database.get(runTrackingKey) ?: return@launch
+            //val today = database.get(runTrackingKey) ?: return@launch
 
-            today.runDistance = runDistance.get()?.toFloat() ?: 0f
-            database.update(today)
+            //today.runDistance = runDistance.get()?.toFloat() ?: 0f
+            //database.update(today)
 
             _navigateToRunTracker.value = true
-        }
+        //}
     }
 }
