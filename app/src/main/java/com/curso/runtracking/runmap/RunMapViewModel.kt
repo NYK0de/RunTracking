@@ -61,7 +61,6 @@ class RunMapViewModel(
     val hourCounter : LiveData<String>
         get() = _totalHourCounter
 
-    var job: Job? = null
 
     fun setDistance(distance: Double){
         _runDistance.value = distance
@@ -141,7 +140,7 @@ class RunMapViewModel(
             _navigateToRunEvaluation.value = oldTodayRun
 
         }
-        job?.cancel()
+
     }
     private suspend fun update(runToday: RunTracker){
         database.update(runToday)
