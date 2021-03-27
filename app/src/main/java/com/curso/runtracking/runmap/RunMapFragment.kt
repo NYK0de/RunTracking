@@ -79,8 +79,6 @@ class RunMapFragment : Fragment(), LocationListener {
         binding.lifecycleOwner = this
 
         // Show received argument
-        //Toast.makeText(requireContext(), "Argumentos recibidos: $arguments", Toast.LENGTH_LONG).show()
-
         runViewModel.navigateToRunEvaluation.observe(viewLifecycleOwner, Observer {run ->
             run?.let {
                 polyline?.points?.let { it1 -> runViewModel.setRunPath(it1) }
@@ -93,23 +91,16 @@ class RunMapFragment : Fragment(), LocationListener {
         })
 
         chronometer = binding.chronometer
-        //chronometer.format = "H:MM:SS"
         chronometer.start()
-        /*
-        chronometer.setOnChronometerTickListener {
-            Log.v("Chronos", "Tick Ocurred: ${chronometer.text}")
-            chronometer = chronometer
-        }
-        */
         chronometer.onChronometerTickListener =
             OnChronometerTickListener {
                     chronometerChanged -> chronometer = chronometerChanged
                 val elapsedMillis = (SystemClock.elapsedRealtime() - chronometer.base)
                 if (elapsedMillis > 3600000L){
-                    chronometer.setFormat("0%s")
+                    chronometer.format = "0%s"
                 }
                 else {
-                    chronometer.setFormat("00:%s")
+                    chronometer.format = "00:%s"
                 }
                 runViewModel.setSecondsCounter(elapsedMillis)
 
@@ -182,9 +173,7 @@ class RunMapFragment : Fragment(), LocationListener {
                 )
                 distance += dist
                 runViewModel.setDistance(distance)
-                //runViewModel.runDistance = distance
 
-                //val strDistance:Double = "%.${2}f".format(distance).toDouble() // formatting distance String
                 val strDistance:Double = String.format("%.${2}f", distance).toDouble() // formatting distance String
 
                 polyline?.remove()
