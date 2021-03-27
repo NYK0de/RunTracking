@@ -1,9 +1,5 @@
 package com.curso.runtracking.runmap
 
-import android.database.Observable
-import android.util.Log
-import android.widget.Chronometer
-import androidx.databinding.Bindable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -20,7 +16,6 @@ class RunMapViewModel(
 ) : ViewModel() {
 
     private var todayRuns = MutableLiveData<RunTracker?>()
-    //var runDistance = ObservableField(0.0)
     private var todayRunPath = MutableLiveData<List<LatLng>>()
 
     /**
@@ -80,7 +75,6 @@ class RunMapViewModel(
         val minutes = floor((seconds / 60).toDouble()).toInt()
         val hours = floor((seconds / (60*60)).toDouble()).toInt()
 
-        //Log.v("Chrono: ", "Tiempo: %s: %s: %s".format(hours.toString(), minutes.toString(), seconds.toString()))
         _totalSecondsCounter.value = if(restSeconds.toInt() > 9) "${restSeconds.toInt()}" else  "0${restSeconds.toInt()}"
         _totalMinCounter.value = if(minutes > 9) "$minutes" else "0$minutes"
         _totalHourCounter.value = if(hours > 9) "$hours" else "0$hours"
@@ -126,36 +120,7 @@ class RunMapViewModel(
             _totalMinCounter.value = "00"
             _totalHourCounter.value = "00"
         }
-        /*
-        job = CoroutineScope(Dispatchers.Default).launch {
-            while(true) {
-                delay(1000)
-                val seconds = _totalSecondsCounter.value
 
-                if (seconds != null) {
-                    if (seconds > 59 ){
-                        _totalMinCounter.value?.plus(1)
-                        _totalSecondsCounter.value = 0
-                    }
-                }
-                val minutes = _totalMinCounter.value
-                if (minutes != null) {
-                    if (minutes > 59){
-                        _totalHourCounter.value?.plus(1)
-                        _totalMinCounter.value = 0
-                    }
-                }
-
-                _totalSecondsCounter.value?.plus(1)
-            }
-
-            Log.v("CR-EXE", "${_totalHourCounter.value} : ${_totalMinCounter.value} : ${_totalSecondsCounter}")
-        }
-
-
-        job?.start()
-
-         */
     }
 
 
