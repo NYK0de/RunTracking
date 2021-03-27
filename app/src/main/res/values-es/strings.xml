@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="finish_run">Finalizar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="settings">Configuración</string>
+    <string name="clear">Borrar</string>
+</resources>

@@ -7,9 +7,7 @@ import androidx.lifecycle.ViewModel
 import com.curso.runtracking.database.RunDAO
 import com.curso.runtracking.database.RunTracker
 
-class RunDetailViewModel (
-    private val runtKey: Long = 0L,
-    dataSource: RunDAO) : ViewModel() {
+class RunDetailViewModel (private val runtKey: Long = 0L, dataSource: RunDAO) : ViewModel() {
 
     /**
      * Hold a reference to SleepDatabase via its SleepDatabaseDao.
