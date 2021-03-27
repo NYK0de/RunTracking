@@ -18,17 +18,12 @@
             android:name="runTrackingKey"
             app:argType="long" />
         <action
-            android:id="@+id/action_runTrackerFragment_to_runEvaluationFragment"
-            app:destination="@id/run_evaluation_fragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:popEnterAnim="@anim/slide_in_right" />
-        <action
-            android:id="@+id/action_runTracker_fragment_to_runDetailFragment"
+            android:id="@+id/action_run_tracker_fragment_to_run_detail_fragment"
             app:destination="@id/run_detail_fragment"
             app:enterAnim="@anim/slide_in_right"
             app:popEnterAnim="@anim/slide_in_right" />
         <action
-            android:id="@+id/action_run_tracker_fragment_to_runMapFragment"
+            android:id="@+id/action_run_tracker_fragment_to_run_map_fragment"
             app:destination="@id/run_map_fragment" />
 
     </fragment>

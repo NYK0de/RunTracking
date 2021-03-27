@@ -2,4 +2,6 @@
 <resources>
     <string name="finish_run">Finalizar</string>
     <string name="cancel">Cancelar</string>
+    <string name="settings">Configuración</string>
+    <string name="clear">Borrar</string>
 </resources>

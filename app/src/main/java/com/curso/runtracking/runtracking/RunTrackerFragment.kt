@@ -2,14 +2,12 @@ package com.curso.runtracking.runtracking
 
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.curso.runtracking.R
 import com.curso.runtracking.database.RunDatabase
 import com.curso.runtracking.databinding.FragmentRunTrackerBinding
@@ -28,6 +26,10 @@ class RunTrackerFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -53,7 +55,8 @@ class RunTrackerFragment : Fragment() {
             runId -> runTrackerviewModel.onRunClicked(runId)
         })
 
-        val manager = GridLayoutManager(activity, 2)
+        //val manager = GridLayoutManager(activity, 2)
+        val manager = LinearLayoutManager(activity)
         binding.runList.layoutManager = manager
 
         binding.runList.adapter = runTrackerAdapter
@@ -61,15 +64,17 @@ class RunTrackerFragment : Fragment() {
         runTrackerviewModel.navigateToRunDetails.observe(viewLifecycleOwner, Observer { run ->
             run?.let {
                 this.findNavController().navigate(RunTrackerFragmentDirections.actionRunTrackerFragmentToRunDetailFragment(run))
-                runTrackerviewModel.onRunDataEvaluationNavigated()
-            }git
+                runTrackerviewModel.onDetailsNavigated()
+            }
         })
 
         runTrackerviewModel.navigateToRunMapFragment.observe(viewLifecycleOwner, Observer { run ->
+            Log.v("NAVFRAGMENT", "Navigating to Map Fragment")
             run?.let {
+
                 this.findNavController().navigate(
                     RunTrackerFragmentDirections.actionRunTrackerFragmentToRunMapFragment(run.runId))
-                runTrackerviewModel.onRunDataEvaluationNavigated()
+                    runTrackerviewModel.doneNavigatingToMap()
             }
         })
 
@@ -106,12 +111,23 @@ class RunTrackerFragment : Fragment() {
         return binding.root
     }
 
-
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.main_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.clear -> {
+                // navigate to settings screen
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
 
 }

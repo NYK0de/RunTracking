@@ -50,5 +50,8 @@
     <string name="run_tracker_map_fragment">Running route map</string>
     <string name="finish_run">Finish</string>
     <string name="cancel">Cancel</string>
+    <string name="settings">settings</string>
+
+    <style name="distance_format">"%.2f"</style>
 
 </resources>

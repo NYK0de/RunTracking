@@ -163,14 +163,18 @@ class RunTrackerViewModel(val database: RunDAO,
     }
 
     private val _navigateToRunDetails = MutableLiveData<Long>()
+
     val navigateToRunDetails
         get() = _navigateToRunDetails
+
+
 
     fun onRunClicked(id: Long){
         _navigateToRunDetails.value = id
     }
-    fun onRunDataEvaluationNavigated(){
+    fun onDetailsNavigated(){
         _navigateToRunDetails.value = null
     }
+
 
 }

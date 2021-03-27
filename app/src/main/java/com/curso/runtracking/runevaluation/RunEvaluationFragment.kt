@@ -1,6 +1,7 @@
 package com.curso.runtracking.runevaluation
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.curso.runtracking.database.RunDatabase
 import com.curso.runtracking.databinding.FragmentRunEvaluationBinding
+import kotlinx.android.synthetic.main.fragment_run_map.*
 
 /**
  * Fragment that displays a list of clickable icons,

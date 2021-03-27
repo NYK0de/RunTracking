@@ -7,13 +7,15 @@ import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
+import android.os.SystemClock
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Chronometer
+import android.widget.Chronometer.OnChronometerTickListener
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -21,15 +23,10 @@ import androidx.navigation.fragment.findNavController
 import com.curso.runtracking.R
 import com.curso.runtracking.database.RunDatabase
 import com.curso.runtracking.databinding.FragmentRunMapBinding
-import com.curso.runtracking.runevaluation.RunEvaluationFragmentArgs
-import com.curso.runtracking.runevaluation.RunEvaluationFragmentDirections
-import com.curso.runtracking.runevaluation.RunEvaluationViewModel
-import com.curso.runtracking.runtracking.RunTrackerFragmentDirections
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-
 import com.google.android.gms.maps.model.*
 import com.google.maps.android.SphericalUtil
 import io.sentry.Sentry
@@ -52,6 +49,8 @@ class RunMapFragment : Fragment(), LocationListener {
     private var locations = ArrayList<LatLng>()
     private var polyline : Polyline? = null
     private var distance : Double = 0.0;
+
+    lateinit var chronometer: Chronometer
 
     private val callback = OnMapReadyCallback { googleMap ->
         map = googleMap
@@ -77,18 +76,44 @@ class RunMapFragment : Fragment(), LocationListener {
         runViewModel = ViewModelProvider(this, viewModelFactory).get(RunMapViewModel::class.java)
         // setting the viewModel to our layout as a variable
         binding.runMapViewModel = runViewModel
+        binding.lifecycleOwner = this
 
         // Show received argument
         //Toast.makeText(requireContext(), "Argumentos recibidos: $arguments", Toast.LENGTH_LONG).show()
 
         runViewModel.navigateToRunEvaluation.observe(viewLifecycleOwner, Observer {run ->
             run?.let {
+                polyline?.points?.let { it1 -> runViewModel.setRunPath(it1) }
+
                 this.findNavController().navigate(
                     RunMapFragmentDirections.actionRunMapFragmentToRunEvaluationFragment(run.runId)
                 )
                 runViewModel.doneNavigating()
             }
         })
+
+        chronometer = binding.chronometer
+        //chronometer.format = "H:MM:SS"
+        chronometer.start()
+        /*
+        chronometer.setOnChronometerTickListener {
+            Log.v("Chronos", "Tick Ocurred: ${chronometer.text}")
+            chronometer = chronometer
+        }
+        */
+        chronometer.onChronometerTickListener =
+            OnChronometerTickListener {
+                    chronometerChanged -> chronometer = chronometerChanged
+                val elapsedMillis = (SystemClock.elapsedRealtime() - chronometer.base)
+                if (elapsedMillis > 3600000L){
+                    chronometer.setFormat("0%s")
+                }
+                else {
+                    chronometer.setFormat("00:%s")
+                }
+                runViewModel.setSecondsCounter(elapsedMillis)
+
+            }
 
         return viewRoot
     }
@@ -157,9 +182,10 @@ class RunMapFragment : Fragment(), LocationListener {
                 )
                 distance += dist
                 runViewModel.setDistance(distance)
+                //runViewModel.runDistance = distance
 
-                val strDistance:Double = "%.${2}f".format(distance).toDouble() // formatting distance String
-
+                //val strDistance:Double = "%.${2}f".format(distance).toDouble() // formatting distance String
+                val strDistance:Double = String.format("%.${2}f", distance).toDouble() // formatting distance String
 
                 polyline?.remove()
 
