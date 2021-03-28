@@ -1,6 +1,7 @@
 package com.curso.runtracking.rundetail
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,16 +12,24 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.curso.runtracking.R
 import com.curso.runtracking.database.RunDatabase
+import com.curso.runtracking.database.RunRoute
 import com.curso.runtracking.databinding.FragmentRunDetailBinding
 import com.google.android.gms.maps.*
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
 
 
 class RunDetailFragment : Fragment(), OnMapReadyCallback {
 
+    private var isMapReady = false
+
+    private val COLOR_BLACK_ARGB = -0x10a75ad
+    private val POLYLINE_STROKE_WIDTH_PX = 8
+
     private lateinit var mMap: GoogleMap
     private lateinit var mapView: MapView
+    private lateinit var runDetailViewModel: RunDetailViewModel
+    private val coordinates: ArrayList<LatLng> = ArrayList()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,11 +50,13 @@ class RunDetailFragment : Fragment(), OnMapReadyCallback {
         val arguments = RunDetailFragmentArgs.fromBundle(arguments!!)
 
         // Create an instance of the ViewModel Factory.
-        val dataSource = RunDatabase.getInstance(application).runDatabaseDao
-        val viewModelFactory = RunDetailViewModelFactory(arguments.runKey, dataSource)
+        val runDataSource = RunDatabase.getInstance(application).runDatabaseDao
+        val runRouteDataSource = RunDatabase.getInstance(application).runRouteDAO
+
+        val viewModelFactory = RunDetailViewModelFactory(arguments.runKey, runDataSource, runRouteDataSource)
 
         // Get a reference to the ViewModel associated with this fragment.
-        val runDetailViewModel = ViewModelProvider( this, viewModelFactory).get(RunDetailViewModel::class.java)
+        runDetailViewModel = ViewModelProvider( this, viewModelFactory).get(RunDetailViewModel::class.java)
 
         // To use the View Model with data binding, you have to explicitly
         // give the binding object a reference to it.
@@ -65,6 +76,19 @@ class RunDetailFragment : Fragment(), OnMapReadyCallback {
             }
         })
 
+        runDetailViewModel.selectedRunPath.observe(viewLifecycleOwner, Observer {
+            if (it != null){
+                if (it.isNotEmpty()) {
+                    coordinates.clear()
+                    for (eachPoint in it){
+                        coordinates.add(LatLng(eachPoint.coordinateLatitude, eachPoint.coordinateLongitude))
+                        Log.v("RunRouteObserved", "Route points: ${coordinates.toString()}")
+                    }
+                    drawRouteOnMap()
+                }
+            }
+        })
+
         //runDetailViewModel.getRun().value.
         mapView = binding.myRunTrackingMap
         mapView.onCreate(savedInstanceState)
@@ -79,18 +103,38 @@ class RunDetailFragment : Fragment(), OnMapReadyCallback {
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
-        //Toast.makeText(activity, "On Map Ready", Toast.LENGTH_LONG).show()
 
         mMap = googleMap
-        mMap.mapType = GoogleMap.MAP_TYPE_HYBRID
+        mMap.mapType = GoogleMap.MAP_TYPE_NORMAL
+        isMapReady = true
+        drawRouteOnMap()
+    }
 
-        // Add a marker in Sydney and move the camera
-        val sydney = LatLng(-34.0, 151.0)
-        mMap.addMarker(
-            MarkerOptions()
-            .position(sydney)
-            .title("Marker in Sydney"))
-        //mMap.mapType = GoogleMap.MAP_TYPE_NORMAL
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+    private fun drawRouteOnMap(){
+        if (!isMapReady) return
+
+        var polyline : Polyline? = null
+        if (coordinates.isNotEmpty()){
+            polyline = mMap.addPolyline(
+                PolylineOptions().clickable(true).addAll(coordinates)
+            )
+            polyline?.endCap = RoundCap()
+            polyline?.width = POLYLINE_STROKE_WIDTH_PX.toFloat()
+            polyline?.color = COLOR_BLACK_ARGB
+            polyline?.jointType = JointType.ROUND
+
+
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(coordinates[0], 17f))
+            // Add a marker in Start run point and move the camera
+
+            mMap.addMarker(
+                MarkerOptions()
+                    .position(coordinates[0])
+                    .title("Start")
+            )
+        }
+        else{
+            Log.v("RunRoute", "Route is null: ${coordinates.toString()}")
+        }
     }
 }
