@@ -1,29 +1,44 @@
 package com.curso.runtracking.rundetail
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import android.provider.MediaStore
+import android.util.Log
+import androidx.lifecycle.*
+import com.curso.runtracking.database.RouteDAO
 import com.curso.runtracking.database.RunDAO
+import com.curso.runtracking.database.RunRoute
 import com.curso.runtracking.database.RunTracker
+import com.google.android.gms.maps.model.LatLng
+import kotlinx.coroutines.launch
 
-class RunDetailViewModel (private val runtKey: Long = 0L, dataSource: RunDAO) : ViewModel() {
+class RunDetailViewModel(
+    private val runtKey: Long = 0L,
+    runDao: RunDAO,
+    runRouteDao: RouteDAO
+) : ViewModel() {
 
     /**
-     * Hold a reference to SleepDatabase via its SleepDatabaseDao.
+     * Hold a reference to RunDatabase via its runDao.
      */
-    val database = dataSource
+    val runDataSource = runDao
+    val runRouteDataSource = runRouteDao
+
+    var selectedRunPath = MutableLiveData<List<RunRoute>>()
 
 
     /**
      */
 
     private val run = MediatorLiveData<RunTracker>()
+    private val runRoute = MediatorLiveData<List<RunRoute>>()
 
     fun getRun() = run
 
     init {
-        run.addSource(database.getRunWithId(runtKey), run::setValue)
+        run.addSource(runDataSource.getRunWithId(runtKey), run::setValue)
+
+        viewModelScope.launch {
+            selectedRunPath.value = runRouteDataSource.get(runtKey)
+        }
     }
 
     /**

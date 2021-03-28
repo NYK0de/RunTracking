@@ -1,18 +1,24 @@
 package com.curso.runtracking.runmap
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.curso.runtracking.database.RouteDAO
 import com.curso.runtracking.database.RunDAO
+import com.curso.runtracking.database.RunRoute
 import com.curso.runtracking.database.RunTracker
 import com.google.android.gms.maps.model.LatLng
+import io.sentry.Sentry
 import kotlinx.coroutines.*
+import java.lang.Exception
 import kotlin.math.floor
 
 class RunMapViewModel(
     private val runTrackingKey: Long = 0L,
-    val database: RunDAO
+    val runDao: RunDAO,
+    val runRouteDao: RouteDAO
 ) : ViewModel() {
 
     private var todayRuns = MutableLiveData<RunTracker?>()
@@ -110,9 +116,9 @@ class RunMapViewModel(
     }
     private fun initializeToday() {
         viewModelScope.launch {
-            todayRuns.value = database.get(runTrackingKey)
+            todayRuns.value = runDao.get(runTrackingKey)
             todayRunPath.value = ArrayList<LatLng>()
-            _runDistance.value = 0.07
+            _runDistance.value = 0.00
             _metricUnit.value = "Mts"
             _distanceWithFormat.value = "0.00"
             _totalSecondsCounter.value = "00"
@@ -125,6 +131,7 @@ class RunMapViewModel(
 
     fun setRunPath(coordinates : List<LatLng>){
         todayRunPath.value = coordinates
+        Log.v("CoordTest", "Coordinates: $coordinates")
     }
 
     fun onRunFinish(){
@@ -136,6 +143,12 @@ class RunMapViewModel(
             update(oldTodayRun)
 
             // Todo: Verify if loctions of polilyne exists
+            try {
+                insertRoute(oldTodayRun.runId, todayRunPath.value!!)
+            }
+            catch (e: Exception){
+                Sentry.captureException(e)
+            }
 
             _navigateToRunEvaluation.value = oldTodayRun
 
@@ -143,7 +156,23 @@ class RunMapViewModel(
 
     }
     private suspend fun update(runToday: RunTracker){
-        database.update(runToday)
+        runDao.update(runToday)
+    }
+
+    private suspend fun insertRoute(runId: Long, route: List<LatLng>){
+        val coordinates = ArrayList<RunRoute>()
+        if (route.isNotEmpty()){
+            runRouteDao.deleteRoute(runId)
+            for (coord in route){
+                val runRoute = RunRoute(runId = runId, coordinateLatitude = coord.latitude, coordinateLongitude = coord.longitude)
+                coordinates.add(runRoute)
+                runRouteDao.insert(coordinates)
+            }
+            Log.v("CoordTestSave", "Coordinates saved: ${runRouteDao.getAll().toString()}")
+        }
+        else{
+            Log.v("CoordTest", "There are no coordinates to save")
+        }
     }
 
 }

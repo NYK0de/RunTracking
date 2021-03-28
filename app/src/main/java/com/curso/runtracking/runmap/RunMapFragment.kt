@@ -69,9 +69,10 @@ class RunMapFragment : Fragment(), LocationListener {
         val arguments = RunMapFragmentArgs.fromBundle(arguments!!)
 
         // Getting the dataSource Instance
-        val dataSource = RunDatabase.getInstance(application).runDatabaseDao
+        val runDataSource = RunDatabase.getInstance(application).runDatabaseDao
+        val routeDataSource = RunDatabase.getInstance(application).runRouteDAO
         // get view model instance through a ViewModelFactory
-        val viewModelFactory = RunMapViewModelFactory(arguments.runKey, dataSource)
+        val viewModelFactory = RunMapViewModelFactory(arguments.runKey, runDataSource, routeDataSource)
 
         runViewModel = ViewModelProvider(this, viewModelFactory).get(RunMapViewModel::class.java)
         // setting the viewModel to our layout as a variable
@@ -81,8 +82,7 @@ class RunMapFragment : Fragment(), LocationListener {
         // Show received argument
         runViewModel.navigateToRunEvaluation.observe(viewLifecycleOwner, Observer {run ->
             run?.let {
-                polyline?.points?.let { it1 -> runViewModel.setRunPath(it1) }
-
+                //polyline?.points?.let { it1 -> runViewModel.setRunPath(it1) }
                 this.findNavController().navigate(
                     RunMapFragmentDirections.actionRunMapFragmentToRunEvaluationFragment(run.runId)
                 )
@@ -185,6 +185,8 @@ class RunMapFragment : Fragment(), LocationListener {
                 polyline?.width = POLYLINE_STROKE_WIDTH_PX.toFloat()
                 polyline?.color = COLOR_BLACK_ARGB
                 polyline?.jointType = JointType.ROUND
+
+                polyline?.points?.let { it1 -> runViewModel.setRunPath(it1) }
 
                 tvStatus?.text = "distancia: $strDistance" // showing distance to the user
 

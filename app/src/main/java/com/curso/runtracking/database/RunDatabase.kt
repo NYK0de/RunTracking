@@ -5,11 +5,12 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [RunTracker::class], version = 1, exportSchema = false)
+@Database(entities = [RunTracker::class, RunRoute::class], version = 1, exportSchema = false)
 abstract class RunDatabase : RoomDatabase() {
 
-    // connect the DB with the DAO
+    // connect the DB with the DAOs
     abstract val runDatabaseDao: RunDAO
+    abstract val runRouteDAO: RouteDAO
 
     // Define a companion object, this allows us to add functions on the RunDatabase class
     companion object{
