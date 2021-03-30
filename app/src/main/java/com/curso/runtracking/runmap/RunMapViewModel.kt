@@ -171,7 +171,7 @@ class RunMapViewModel(
         }
         else{
             val e = Exception("There are no coordinates to save")
-            Sentry.captureException(e)
+            throw e
         }
     }
 
