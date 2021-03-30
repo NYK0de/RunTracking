@@ -4,7 +4,6 @@ import android.app.Application
 import androidx.lifecycle.*
 import com.curso.runtracking.database.RunDAO
 import com.curso.runtracking.database.RunTracker
-import com.curso.runtracking.formatRuns
 import kotlinx.coroutines.*
 
 class RunTrackerViewModel(val database: RunDAO,
@@ -15,12 +14,7 @@ class RunTrackerViewModel(val database: RunDAO,
     private var todayRuns = MutableLiveData<RunTracker?>()
 
     val runsOfAllDays = database.getAllRuns()
-    /**
-     * Converted dayRunning to Spanned for displaying.
-     */
-    val allDaysString = Transformations.map(runsOfAllDays) { runsOfAllDays ->
-        formatRuns(runsOfAllDays, application.resources)
-    }
+
 
     val startButtonVisible = Transformations.map(todayRuns) {
         null == it

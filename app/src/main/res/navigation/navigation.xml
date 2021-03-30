@@ -40,7 +40,7 @@
             android:id="@+id/action_run_evaluation_fragment_to_run_tracker_fragment"
             app:destination="@id/run_tracker_fragment"
             app:launchSingleTop="false"
-            app:popUpTo="@+id/sleep_tracker_fragment"
+            app:popUpTo="@+id/run_tracker_fragment"
             app:popUpToInclusive="true" />
     </fragment>
     <fragment

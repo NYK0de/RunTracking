@@ -168,10 +168,10 @@ class RunMapViewModel(
                 coordinates.add(runRoute)
                 runRouteDao.insert(coordinates)
             }
-            Log.v("CoordTestSave", "Coordinates saved: ${runRouteDao.getAll().toString()}")
         }
         else{
-            Log.v("CoordTest", "There are no coordinates to save")
+            val e = Exception("There are no coordinates to save")
+            Sentry.captureException(e)
         }
     }
 
