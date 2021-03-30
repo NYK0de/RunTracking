@@ -4,4 +4,34 @@
     <string name="cancel">Cancelar</string>
     <string name="settings">Configuración</string>
     <string name="clear">Borrar</string>
+
+    <!-- App title and fragment titles -->
+    <string name="run_tracker_fragment">Track Your Run</string>
+    <string name="run_evaluation_fragment">Evaluate Your Run</string>
+
+    <!-- Button labels -->
+    <string name="start">Iniciar</string>
+    <string name="stop">Detener</string>
+
+
+    <!-- run quality strings -->
+    <string name="how_was_hour_run">¿Qué tal estuvo la carrera?</string>
+    <string name="zero_very_bad">Muy mal</string>
+    <string name="one_poor">mal</string>
+    <string name="two_soso">Regular</string>
+    <string name="three_ok">Bien</string>
+    <string name="four_pretty_good">Muy bien</string>
+    <string name="five_excellent">Excelente!</string>
+
+    <!-- Toast to play after Clear button has been pressed -->
+    <string name="cleared_message">Todos tus datos se borrarán para siempre.</string>
+
+    <string name="distancia_recorrida">Distancia: </string>
+    <string name="run_distance_kms">%s kms</string>
+    <string name="hora_de_inicio">Inicio:</string>
+    <string name="hora_de_fin">Fin:</string>
+    <string name="holder_hora_inicio">2020-10-18 00:00:00</string>
+    <string name="holder_hora_fin">2020-10-18 01:00:00</string>
+
+    <string name="run_tracker_map_fragment">Running route map</string>
 </resources>

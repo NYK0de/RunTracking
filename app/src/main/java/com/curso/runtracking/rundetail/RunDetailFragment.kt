@@ -82,7 +82,6 @@ class RunDetailFragment : Fragment(), OnMapReadyCallback {
                     coordinates.clear()
                     for (eachPoint in it){
                         coordinates.add(LatLng(eachPoint.coordinateLatitude, eachPoint.coordinateLongitude))
-                        Log.v("RunRouteObserved", "Route points: ${coordinates.toString()}")
                     }
                     drawRouteOnMap()
                 }
@@ -113,7 +112,7 @@ class RunDetailFragment : Fragment(), OnMapReadyCallback {
     private fun drawRouteOnMap(){
         if (!isMapReady) return
 
-        var polyline : Polyline? = null
+        var polyline: Polyline?
         if (coordinates.isNotEmpty()){
             polyline = mMap.addPolyline(
                 PolylineOptions().clickable(true).addAll(coordinates)
@@ -122,7 +121,6 @@ class RunDetailFragment : Fragment(), OnMapReadyCallback {
             polyline?.width = POLYLINE_STROKE_WIDTH_PX.toFloat()
             polyline?.color = COLOR_BLACK_ARGB
             polyline?.jointType = JointType.ROUND
-
 
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(coordinates[0], 17f))
             // Add a marker in Start run point and move the camera
