@@ -106,7 +106,6 @@ class RunMapFragment : Fragment(), LocationListener {
         enableMyLocation()
         chronometer = binding.chronometer
 
-
         runViewModel.isChronometerStarted.observe(viewLifecycleOwner, Observer { t ->
             if (t){
                 startChronometer()
