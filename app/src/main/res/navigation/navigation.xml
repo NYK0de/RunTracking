@@ -59,6 +59,16 @@
         <argument
             android:name="runKey"
             app:argType="long" />
+
+        <action
+            android:id="@+id/action_run_map_fragment_to_run_tracker_fragment"
+            app:destination="@id/run_tracker_fragment"
+            app:enterAnim="@anim/fragment_fade_enter"
+            app:exitAnim="@anim/fragment_fade_exit"
+            app:popEnterAnim="@anim/fragment_open_enter"
+            app:popExitAnim="@anim/fragment_open_exit"
+            app:popUpTo="@id/run_tracker_fragment"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment

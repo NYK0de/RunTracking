@@ -1,6 +1,7 @@
 package com.curso.runtracking.runmap
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
@@ -23,6 +24,10 @@ import androidx.navigation.fragment.findNavController
 import com.curso.runtracking.R
 import com.curso.runtracking.database.RunDatabase
 import com.curso.runtracking.databinding.FragmentRunMapBinding
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -46,15 +51,17 @@ class RunMapFragment : Fragment(), LocationListener {
 
     private val REQUEST_LOCATION_PERMISSION = 1
     private lateinit var map: GoogleMap
+    private var isMapReady = false
     private var locations = ArrayList<LatLng>()
     private var polyline : Polyline? = null
     private var distance : Double = 0.0;
 
     lateinit var chronometer: Chronometer
 
+
     private val callback = OnMapReadyCallback { googleMap ->
         map = googleMap
-        enableMyLocation()
+        isMapReady = true
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -65,14 +72,11 @@ class RunMapFragment : Fragment(), LocationListener {
         locationManager =
             activity!!.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
-        // getting the argument passed by navigation
-        val arguments = RunMapFragmentArgs.fromBundle(arguments!!)
-
         // Getting the dataSource Instance
         val runDataSource = RunDatabase.getInstance(application).runDatabaseDao
         val routeDataSource = RunDatabase.getInstance(application).runRouteDAO
         // get view model instance through a ViewModelFactory
-        val viewModelFactory = RunMapViewModelFactory(arguments.runKey, runDataSource, routeDataSource)
+        val viewModelFactory = RunMapViewModelFactory(runDataSource, routeDataSource)
 
         runViewModel = ViewModelProvider(this, viewModelFactory).get(RunMapViewModel::class.java)
         // setting the viewModel to our layout as a variable
@@ -82,7 +86,6 @@ class RunMapFragment : Fragment(), LocationListener {
         // Show received argument
         runViewModel.navigateToRunEvaluation.observe(viewLifecycleOwner, Observer {run ->
             run?.let {
-                //polyline?.points?.let { it1 -> runViewModel.setRunPath(it1) }
                 this.findNavController().navigate(
                     RunMapFragmentDirections.actionRunMapFragmentToRunEvaluationFragment(run.runId)
                 )
@@ -90,21 +93,27 @@ class RunMapFragment : Fragment(), LocationListener {
             }
         })
 
-        chronometer = binding.chronometer
-        chronometer.start()
-        chronometer.onChronometerTickListener =
-            OnChronometerTickListener {
-                    chronometerChanged -> chronometer = chronometerChanged
-                val elapsedMillis = (SystemClock.elapsedRealtime() - chronometer.base)
-                if (elapsedMillis > 3600000L){
-                    chronometer.format = "0%s"
-                }
-                else {
-                    chronometer.format = "00:%s"
-                }
-                runViewModel.setSecondsCounter(elapsedMillis)
-
+        // action_run_map_fragment_to_run_tracker_fragment
+        runViewModel.navigateToRunTracker.observe(viewLifecycleOwner, Observer { navigate ->
+            if (navigate != null){
+                this.findNavController().navigate(
+                    RunMapFragmentDirections.actionRunMapFragmentToRunTrackerFragment(0L)
+                )
+                runViewModel.doneCancelRun()
             }
+        })
+
+        enableMyLocation()
+        chronometer = binding.chronometer
+
+        runViewModel.isChronometerStarted.observe(viewLifecycleOwner, Observer { t ->
+            if (t){
+                startChronometer()
+            }
+            else{
+                chronometer.stop()
+            }
+        })
 
         return viewRoot
     }
@@ -120,6 +129,24 @@ class RunMapFragment : Fragment(), LocationListener {
         locationManager.removeUpdates(this)
     }
 
+    private fun startChronometer(){
+        chronometer.base = SystemClock.elapsedRealtime()
+        chronometer.onChronometerTickListener =
+            OnChronometerTickListener {
+                    chronometerChanged -> chronometer = chronometerChanged
+                val elapsedMillis = (SystemClock.elapsedRealtime() - chronometer.base)
+                if (elapsedMillis > 3600000L){
+                    chronometer.format = "0%s"
+                }
+                else {
+                    chronometer.format = "00:%s"
+                }
+                runViewModel.setSecondsCounter(elapsedMillis)
+            }
+        chronometer.start()
+        finishRun.visibility = View.VISIBLE
+        startRun.visibility = View.INVISIBLE
+    }
 
     private fun enableMyLocation() {
         if (ActivityCompat.checkSelfPermission(requireActivity(),Manifest.permission.ACCESS_FINE_LOCATION)
@@ -135,13 +162,15 @@ class RunMapFragment : Fragment(), LocationListener {
             )
         } else {
             // to show our current location in the map (a little blue circle)
-            map.isMyLocationEnabled = true
             locationManager.requestLocationUpdates(
                 LocationManager.GPS_PROVIDER,
-                1000,
-                3.0f,
+                500,
+                2.0f,
                 this
             )
+            if (isMapReady) {
+                map.isMyLocationEnabled = true
+            }
         }
 
     }
@@ -152,6 +181,7 @@ class RunMapFragment : Fragment(), LocationListener {
         if (requestCode == REQUEST_LOCATION_PERMISSION) {
             if (grantResults.contains(PackageManager.PERMISSION_GRANTED)) {
                 enableMyLocation()
+
             }
         }
     }
@@ -159,14 +189,19 @@ class RunMapFragment : Fragment(), LocationListener {
     /**
      * @description: Track our location and draw our route, too show the distance we are walked
      */
+    @SuppressLint("MissingPermission")
     override fun onLocationChanged(p0: Location) {
         try {
             locations.add(LatLng(p0.latitude, p0.longitude))
+
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(p0.latitude, p0.longitude), 17f))
+            if (isMapReady) {
+                map.isMyLocationEnabled = true
+            }
 
             if (locations.size >= 2) {
                 // We calculate the distance between the last location and the current location
-                // And then we increment the global distance walked/runned from the first location and the last location
+                // And then we increment the global distance walked/ran from the first location and the last location
                 val dist = SphericalUtil.computeDistanceBetween(
                     locations[locations.size-2],
                     locations[locations.size-1]
@@ -174,10 +209,7 @@ class RunMapFragment : Fragment(), LocationListener {
                 distance += dist
                 runViewModel.setDistance(distance)
 
-                val strDistance:Double = String.format("%.${2}f", distance).toDouble() // formatting distance String
-
                 polyline?.remove()
-
                 polyline = map.addPolyline(
                     PolylineOptions().clickable(true).addAll(locations)
                 )
@@ -187,8 +219,6 @@ class RunMapFragment : Fragment(), LocationListener {
                 polyline?.jointType = JointType.ROUND
 
                 polyline?.points?.let { it1 -> runViewModel.setRunPath(it1) }
-
-                tvStatus?.text = "distancia: $strDistance" // showing distance to the user
 
             }
         } catch (e: Exception){

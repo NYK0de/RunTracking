@@ -34,6 +34,12 @@ interface RunDAO {
     suspend fun clear()
 
     /**
+     * Delete a specific run of a given runId
+     */
+    @Query("DELETE FROM daily_run_tracking_table WHERE runId = :key")
+    suspend fun deleteOne(key: Long)
+
+    /**
      * all the rows sorted by id DESC
      */
     @Query("SELECT * FROM daily_run_tracking_table ORDER BY runId DESC")
