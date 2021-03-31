@@ -100,7 +100,6 @@ class RunMapFragment : Fragment(), LocationListener {
                     RunMapFragmentDirections.actionRunMapFragmentToRunTrackerFragment(0L)
                 )
                 runViewModel.doneCancelRun()
-                Log.v("NAVBACK", "Navigating to back Fragment")
             }
         })
 
@@ -203,7 +202,7 @@ class RunMapFragment : Fragment(), LocationListener {
 
             if (locations.size >= 2) {
                 // We calculate the distance between the last location and the current location
-                // And then we increment the global distance walked/runned from the first location and the last location
+                // And then we increment the global distance walked/ran from the first location and the last location
                 val dist = SphericalUtil.computeDistanceBetween(
                     locations[locations.size-2],
                     locations[locations.size-1]
@@ -211,10 +210,7 @@ class RunMapFragment : Fragment(), LocationListener {
                 distance += dist
                 runViewModel.setDistance(distance)
 
-                val strDistance:Double = String.format("%.${2}f", distance).toDouble() // formatting distance String
-
                 polyline?.remove()
-
                 polyline = map.addPolyline(
                     PolylineOptions().clickable(true).addAll(locations)
                 )
@@ -224,8 +220,6 @@ class RunMapFragment : Fragment(), LocationListener {
                 polyline?.jointType = JointType.ROUND
 
                 polyline?.points?.let { it1 -> runViewModel.setRunPath(it1) }
-
-                tvStatus?.text = "distancia: $strDistance" // showing distance to the user
 
             }
         } catch (e: Exception){

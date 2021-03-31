@@ -197,7 +197,6 @@ class RunMapViewModel(
             todayRuns.value?.runId?.let { runDao.deleteOne(it) }
         }
         _navigateToRunTracker.value = true
-        Log.v("NAVBACK", "Navigating to back VM")
     }
 
     private suspend fun insertRoute(runId: Long, route: List<LatLng>){

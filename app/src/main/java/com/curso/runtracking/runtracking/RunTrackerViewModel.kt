@@ -123,15 +123,7 @@ class RunTrackerViewModel(val database: RunDAO,
     }
 
     fun onStartTracking(){
-        viewModelScope.launch {
-            //val newToday = RunTracker()
-            //insert(newToday)
-            //todayRuns.value = getTodayRunFromDatabase()
-            //_navigateToRunMap.value = todayRuns.value
-
-            _navigateToRunMapBool.value = true
-            // call to Fragment with the Map
-        }
+        _navigateToRunMapBool.value = true
     }
 
     private suspend fun insert(today: RunTracker){
@@ -139,17 +131,6 @@ class RunTrackerViewModel(val database: RunDAO,
     }
 
 
-    fun onStopTracking(){
-        viewModelScope.launch {
-            val oldTodayRun = todayRuns.value ?: return@launch
-            oldTodayRun.endRunTimeMilli = System.currentTimeMillis()
-            update(oldTodayRun)
-            //_navigateToRunEvaluation.value = oldTodayRun
-            //_navigateToRunMap.value = oldTodayRun
-
-            //_navigateToRunMapLong.value = oldTodayRun.runId
-        }
-    }
     private suspend fun update(runToday: RunTracker){
         database.update(runToday)
     }
