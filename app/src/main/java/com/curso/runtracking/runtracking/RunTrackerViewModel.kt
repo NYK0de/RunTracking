@@ -54,7 +54,8 @@ class RunTrackerViewModel(val database: RunDAO,
      * Variable that tells the Fragment to navigate to a specific [RunTrackerMapFragment]
      * This is 'private' because we don't want to expose setting this value to the Fragment
      */
-    private val _navigateToRunMap = MutableLiveData<RunTracker>()
+    //private val _navigateToRunMap = MutableLiveData<RunTracker>()
+    private val _navigateToRunMapBool = MutableLiveData<Boolean>()
 
     /**
      * Call this immediately after calling `show()` on a toast.
@@ -78,8 +79,12 @@ class RunTrackerViewModel(val database: RunDAO,
      * If this is non-null, inmediately navigate to [RunTrackerMapFragment]
      * and call [doneNavigatingToGrade]
      */
-    val navigateToRunMapFragment: LiveData<RunTracker>
-        get() = _navigateToRunMap
+    //val navigateToRunMapFragment: LiveData<RunTracker>
+    //    get() = _navigateToRunMap
+    val navigateToRunMapFragment: LiveData<Boolean>
+        get() = _navigateToRunMapBool
+
+
     /**
      * Call this inmediatly after navigating to [RunEvalationFragment]
      * It will clear the navigation request,
@@ -95,7 +100,8 @@ class RunTrackerViewModel(val database: RunDAO,
      * so if the user rotates their phone it won't navigate twice
      */
     fun doneNavigatingToMap(){
-        _navigateToRunMap.value = null
+        //_navigateToRunMap.value = null
+        _navigateToRunMapBool.value = null
     }
     // ------ End of declaring variables for navigation components -------------
 
@@ -118,10 +124,12 @@ class RunTrackerViewModel(val database: RunDAO,
 
     fun onStartTracking(){
         viewModelScope.launch {
-            val newToday = RunTracker()
-            insert(newToday)
-            todayRuns.value = getTodayRunFromDatabase()
-            _navigateToRunMap.value = todayRuns.value
+            //val newToday = RunTracker()
+            //insert(newToday)
+            //todayRuns.value = getTodayRunFromDatabase()
+            //_navigateToRunMap.value = todayRuns.value
+
+            _navigateToRunMapBool.value = true
             // call to Fragment with the Map
         }
     }
@@ -137,7 +145,9 @@ class RunTrackerViewModel(val database: RunDAO,
             oldTodayRun.endRunTimeMilli = System.currentTimeMillis()
             update(oldTodayRun)
             //_navigateToRunEvaluation.value = oldTodayRun
-            _navigateToRunMap.value = oldTodayRun
+            //_navigateToRunMap.value = oldTodayRun
+
+            //_navigateToRunMapLong.value = oldTodayRun.runId
         }
     }
     private suspend fun update(runToday: RunTracker){

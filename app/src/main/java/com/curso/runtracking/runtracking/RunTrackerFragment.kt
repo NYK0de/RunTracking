@@ -68,24 +68,18 @@ class RunTrackerFragment : Fragment() {
             }
         })
 
-        runTrackerviewModel.navigateToRunMapFragment.observe(viewLifecycleOwner, Observer { run ->
-            Log.v("NAVFRAGMENT", "Navigating to Map Fragment")
-            run?.let {
-
+        runTrackerviewModel.navigateToRunMapFragment.observe(viewLifecycleOwner, Observer {run ->
+            if (run != null){
+                Log.v("NAVFRAGMENT", "Navigating to Map Fragment")
                 this.findNavController().navigate(
-                    RunTrackerFragmentDirections.actionRunTrackerFragmentToRunMapFragment(run.runId))
-                    runTrackerviewModel.doneNavigatingToMap()
+                    RunTrackerFragmentDirections.actionRunTrackerFragmentToRunMapFragment(0L))
+                runTrackerviewModel.doneNavigatingToMap()
             }
         })
 
-        // Adding an observer on the state variable for navigating when STOP BUTTON is pressed
-        runTrackerviewModel.navigateToRunEvaluation.observe(viewLifecycleOwner, Observer {run ->
+        runTrackerviewModel.navigateToRunMapFragment.observe(viewLifecycleOwner, Observer { run ->
+
             run?.let {
-               /*
-                findNavController().navigate(
-                   RunMapFragmentDirections.actionRunMapFragmentToRunEvaluationFragment(run.runId)
-               ) */
-                //runTrackerviewModel.doneNavigatingToGrade()
 
             }
         })

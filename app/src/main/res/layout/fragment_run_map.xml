@@ -65,8 +65,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
+                android:padding="4dp"
                 android:background="@drawable/bg_button_cancel"
                 android:fontFamily="sans-serif-medium"
+                android:onClick="@{() -> runMapViewModel.onRunCancel()}"
                 android:src="@drawable/ic_cancel"
                 android:textSize="18sp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -79,15 +81,34 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:background="@drawable/bg_button_done"
-                android:drawablePadding="4dp"
+                android:padding="4dp"
                 android:fontFamily="sans-serif-medium"
                 android:onClick="@{() -> runMapViewModel.onRunFinish()}"
                 android:src="@drawable/ic_done_white"
                 android:textColor="#FFFFFF"
                 android:textSize="18sp"
+                android:visibility="invisible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@+id/timer"
                 app:layout_constraintTop_toBottomOf="@+id/textView19" />
+
+            <ImageButton
+                android:id="@+id/startRun"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_button_done"
+                android:padding="4dp"
+                android:fontFamily="sans-serif-medium"
+                android:onClick="@{() -> runMapViewModel.onStartRun()}"
+                android:src="@drawable/ic_flag"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/timer"
+                app:layout_constraintTop_toBottomOf="@+id/textView19"
+                />
 
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -262,6 +283,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/finishRun"
                 app:layout_constraintStart_toEndOf="@+id/cancelRun" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
         <!-- android:text="@={runMapViewModel.runDistance}" -->
 
